@@ -71,12 +71,12 @@ def argumentParser():
                             'Default: 0 -1 1')
     parser.add_argument('-mask_A',
                         '-A',
-                         default=[], 
+                         default="", 
                          dest='A',
                          help='Write the atom mask for domain A here')
     parser.add_argument('-mask_B',
                         '-B',
-                        default=[],
+                        default="",
                         dest='B',
                         help='Write the atom mask for domain B here')
     parser.add_argument('-o',
@@ -195,8 +195,37 @@ def main():
             print('File {!s} doesn\'t exist.' 
                   'Please check the filepath or add the file.\n'.format(file))
             calc.sysexit(1)
-
-    ### Format input arguments and generate some variables based on the input
+    
+    ### Format input arguments and generate some variables based on the user-provided arguments
+    if args.A == "" and args.B == "":
+        print( ("No atom selections were found. Please use -mask_A / -A and "
+               "-mask_B / -B to select the domains you want to calculate "
+               "the inter-domain orientation for. \nAtom selections are input "
+               "as AMBER atom mask strings, see "
+               "https://amberhub.chpc.utah.edu/atom-mask-selection-syntax/"
+             ) )
+        sysexit(0)
+        
+    if args.A != "" and args.B == "":
+        print( ("WARNING: Only found an atom selection for domain A. Assuming "
+                "domain B is everything not found in the domain A selection. "
+                "If that's not correct, run OCD again and explicitly define "
+                " domain B with the -B / -mask_B argument."
+             )  )
+        args.B = "!({})".format(args.A)
+        
+    if args.A == "" and args.B != "":
+        print( ("WARNING: Only found an atom selection for domain B. Assuming "
+                "domain A is everything not found in the domain B selection. "
+                "If that's not correct, run OCD again and explicitly define "
+                " domain A explicitly with the -A / -mask_A argument."
+             )  )
+        args.A = "!({})".format(args.B)
+        
+            
+    
+    
+    
     # args.use needs to be a tuple for use in pytraj. 
     # If no argument was given, use every frame of the whole trajectory. 
     # Throws an error if input is not three arguments
