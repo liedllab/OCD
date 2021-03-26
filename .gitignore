@@ -1,3 +1,4 @@
 ./ocd/__pycache__
-./Test
+Test/*
+requirements.txt
 *.pyc

@@ -189,10 +189,10 @@ def pymol_init():
     Returns a string of the necessary PyMol commands
     
     '''
-    str_o = "cmd.group(name='pdbs', action='open')\n"
-                "cmd.group(name='pseudoatoms', action='open')\n"
-                "cmd.group(name='coms', action='open')\n"
-                "cmd.group(name='distances', action='open')\n"
+    str_o = ("cmd.group(name='pdbs', action='open')\n"
+             "cmd.group(name='pseudoatoms', action='open')\n"
+             "cmd.group(name='coms', action='open')\n"
+             "cmd.group(name='distances', action='open')\n")
     return str_o
 
 def pymol_settings(masks = []):

@@ -13,9 +13,9 @@ setup(
     author_email="valentin.hoerschinger@uibk.ac.at",
     include_package_data=True,
     zip_safe=False,
-    licence = "GPLv3"
+    licence = "GPLv3",
     long_description=readme(),
-    url = "https://github.com/liedllab/OCD"
+    url = "https://github.com/liedllab/OCD",
     packages=['ocd'],
     py_modules=["ocd.visualize", "ocd.calculation","ocd.OCD"],
     install_requires=[
