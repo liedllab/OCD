@@ -327,7 +327,7 @@ def main():
     ### Output data
     print('Outputing and visualizing data.')
     
-    cols = ['AB','AC1','BC1','AC2','BC2','dc','Time', 'RMSD_A','RMSD_B']
+    cols = ['AB', 'AC1', 'BC1', 'AC2', 'BC2', 'dc', 'RMSD_A', 'RMSD_B', 'Time']
     
     df = pd.DataFrame(results, columns=cols)
     df = df.apply(pd.to_numeric, errors='ignore') 
