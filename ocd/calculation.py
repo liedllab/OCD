@@ -186,7 +186,7 @@ def new_masks(stripped_domains, stripped_ref_domains):
     This function compares the residues found in the sample and the reference structure after the atom mask was applied.
     If reference structure and traj have a different amount of atoms, we assume this to be due to missing residues.
     Therefore, we generate a new mask corresponding to only the residues shared between them. This goes off the residue names in the pdb files.
-    Note that this won't work correctly with trajectoreis, as the residues there are just renumbered to start from 1 in all cases.
+    Note that this won't work correctly with trajectories, as the residues there are just renumbered to start from 1 in all cases.
     
     Parameters:
     -----
@@ -200,7 +200,7 @@ def new_masks(stripped_domains, stripped_ref_domains):
     '''
     final_residues = []
     if stripped_domains[0].xyz.shape[1] != stripped_ref_domains[0].xyz.shape[1] or stripped_domains[1].xyz.shape[1] != stripped_ref_domains[1].xyz.shape[1]:
-        print('Found different amount of atoms in the trajectory and the reference. Cutting down residues...')
+        print('WARNING: Found different amount of atoms in the trajectory and the reference. Cutting down residues...')
         for tix, traj in enumerate(stripped_domains):
             ref = stripped_ref_domains[tix]
             ref_res = set([res.original_resid for res in ref.top.residues])

@@ -13,7 +13,6 @@ Then this coordinate system and the reference are used to calculate
 
 from ocd import visualize as vis
 from ocd import calculation as calc
-
 import pytraj as pt
 import numpy as np
 import argparse
@@ -79,6 +78,16 @@ def argumentParser():
                         default="",
                         dest='B',
                         help='Write the atom mask for domain B here')
+    parser.add_argument('-mask_ref_A',
+                        '-ref_A',
+                         default="", 
+                         dest='ref_A',
+                         help='Write the atom mask for reference domain A here')
+    parser.add_argument('-mask_ref_B',
+                        '-ref_B',
+                        default="",
+                        dest='ref_B',
+                        help='Write the atom mask for reference domain B here')
     parser.add_argument('-o',
                         '-output', 
                         default="Run_"+time.strftime("%Y-%m-%d_%H-%M-%S"), 
@@ -197,7 +206,11 @@ def main():
             calc.sysexit(1)
     
     ### Format input arguments and generate some variables based on the user-provided arguments
-    if args.A == "" and args.B == "":
+    
+    ## Mask handling: Domain Masks
+    # Case 1: No masks were provided by the user 
+    # -> exit the script with error message
+    if args.A == "" and args.B == "": 
         print( ("No atom selections were found. Please use -mask_A / -A and "
                "-mask_B / -B to select the domains you want to calculate "
                "the inter-domain orientation for. \nAtom selections are input "
@@ -205,28 +218,51 @@ def main():
                "https://amberhub.chpc.utah.edu/atom-mask-selection-syntax/"
              ) )
         sysexit(0)
-        
-    if args.A != "" and args.B == "":
+    
+    # Case 2A: A mask for A was provided but not for B 
+    # -> Assume that B is everything not in A    
+    if args.A != "" and args.B == "": 
         print( ("WARNING: Only found an atom selection for domain A. Assuming "
                 "domain B is everything not found in the domain A selection. "
                 "If that's not correct, run OCD again and explicitly define "
                 " domain B with the -B / -mask_B argument."
              )  )
         args.B = "!({})".format(args.A)
+    
+    # Case 2B: A mask for B was provided but not for A 
+    # -> Assume that A is everything not in B    
+    if args.A == "" and args.B != "": 
         
-    if args.A == "" and args.B != "":
         print( ("WARNING: Only found an atom selection for domain B. Assuming "
                 "domain A is everything not found in the domain B selection. "
                 "If that's not correct, run OCD again and explicitly define "
                 " domain A explicitly with the -A / -mask_A argument."
              )  )
         args.A = "!({})".format(args.B)
+    
+    ## Mask Handling: Reference Masks
+    # Same cases as above, but the reference masks will only be applied to the reference.
+    # If no reference masks were provided, the domain masks are used instead.
+    if args.ref_A == "" and args.ref_B == "": 
+        print( ("WARNING: No reference masks (-ref_A / -ref_B) were provided. "
+                "Therefore, the domain masks will be applied to the reference."      
+             ) )
+        args.ref_A, args.ref_B = args.A, args.B
         
-            
+    if args.ref_A != "" and args.ref_B == "": 
+        print( ("WARNING: No reference mask for domain B was provided. "
+                "Therefore, the domain mask for B will be applied to the reference."      
+             ) )
+        args.ref_B = args.B
+        
+    if args.ref_A == "" and args.ref_B != "": 
+        print( ("WARNING: No reference mask for domain A was provided. "
+                "Therefore, the domain mask for A will be applied to the reference."      
+             ) )
+        args.ref_A = args.A
     
     
-    
-    # args.use needs to be a tuple for use in pytraj. 
+    ### args.use needs to be a tuple for use in pytraj. 
     # If no argument was given, use every frame of the whole trajectory. 
     # Throws an error if input is not three arguments
     if args.use is None:
@@ -263,15 +299,18 @@ def main():
     if args.refstruc != None:
         
         ref_traj = pt.iterload(args.refstruc)
-        stripped_refs = [ref_traj.strip('!('+args.A+')'), 
-                         ref_traj.strip('!('+args.B+')')]
+        stripped_refs = [ref_traj.strip('!('+args.ref_A+')'), 
+                         ref_traj.strip('!('+args.ref_B+')')]
         
-        ### If residues are missing, exclude them from the 
-        #   alignment with new_mask 
+        ### If residues are missing eg in pdb files, 
+        #   exclude them from the alignment with new_mask 
         #   - necessary because alignment would break if 
         #   the number of atoms supplied is different
-        new_mask_A, new_mask_B = calc.new_masks(stripped_domains, stripped_refs)
-        new_masks = [new_mask_A, new_mask_B]
+        if args.top == args.input: #this happens for pdbs!
+            new_mask_A, new_mask_B = calc.new_masks(stripped_domains, stripped_refs)
+            new_masks = [new_mask_A, new_mask_B]
+        else: 
+            new_masks = [None, None]
 
         ## Strip domains down for alignment, if 
         #  reference structure has fewer residues. 
@@ -286,8 +325,7 @@ def main():
                         'stripped further. This usually happens when ' 
                         'the trajectory contains fewer residues than ' 
                         'the reference structure!'.format('A' if dix == 0 else 'B'))         
-
-        
+                 
         ref_coords_A, ref_coords_B = calc.standard_orientation(
                 stripped_refs, new_mask_A, new_mask_B, args.output)
     else:
