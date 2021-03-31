@@ -306,11 +306,11 @@ def main():
         #   exclude them from the alignment with new_mask 
         #   - necessary because alignment would break if 
         #   the number of atoms supplied is different
-        if args.top == args.input: #this happens for pdbs!
+        if args.top == args.input: #this happens only for pdbs!
             new_mask_A, new_mask_B = calc.new_masks(stripped_domains, stripped_refs)
-            new_masks = [new_mask_A, new_mask_B]
         else: 
-            new_masks = [None, None]
+            new_mask_A, new_mask_B = None, None  
+        new_masks = [None, None]
 
         ## Strip domains down for alignment, if 
         #  reference structure has fewer residues. 

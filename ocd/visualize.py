@@ -395,9 +395,9 @@ def vmd_script(traj, top, use, vectors, distances=[],
         draw_distances = True
         tcl_string += "set dist_data " + str(distances).replace('[','[list ').replace('\n','').replace("'","").replace(',','') + '\n\n'
                                                                                                           
-    header = ('mol new {} type parm7 waitfor all\nmol addfile {} type netcdf' 
-             'first {} last {} step {} waitfor all\nmol delrep 0 top\nmol' 
-             'representation NewCartoon 0.300000 10.000000 4.100000 0\nmol' 
+    header = ('mol new {} type parm7 waitfor all\nmol addfile {} type netcdf ' 
+             'first {} last {} step {} waitfor all\nmol delrep 0 top\nmol ' 
+             'representation NewCartoon 0.300000 10.000000 4.100000 0\nmol ' 
              'addrep top\n'.format(top, traj, use[0], use[1], use[2])
              )
     ### This doesn't need the double {{ }} as it's not affected by format
