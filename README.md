@@ -10,12 +10,12 @@ https://www.biorxiv.org/content/10.1101/2021.03.15.435379v1
 OCD.py runs on Mac OS and Linux. It is supported for Python versions 3.6-3.8 
 
 We recommend using conda (https://docs.anaconda.com/anaconda/install/) to create a fresh environment :
-> conda create -n OCDpy3.7 python=3.7
-> conda activate OCDpy3.7
+> conda create -n OCDpy3.7 python=3.7  
+> conda activate OCDpy3.7  
 
 Install the tool with pip from inside the OCD folder:
-> cd /PATH_TO_OCD/OCD
-> pip install .
+> cd /PATH_TO_OCD/OCD  
+> pip install .  
 
 If you want to run OCD on Python 3.8, first install the ambertools package using conda:
 > conda install -c conda-forge ambertools=20
@@ -33,7 +33,7 @@ OCD.py depends on the following libraries. Find installation instructions includ
 # Usage
 
 Run OCD.py from the console:
-> OCD[Arguments]
+> OCD [Arguments]
 
 To get a summary of all available arguments, type:
 >OCD -h
